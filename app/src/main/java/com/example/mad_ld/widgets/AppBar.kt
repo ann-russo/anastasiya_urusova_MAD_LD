@@ -1,27 +1,39 @@
 package com.example.mad_ld.widgets
 
-
-import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AppBar() {
+fun AppBar(navController: NavController = rememberNavController(), title: String) {
     var dropDownMenuExpanded by remember { mutableStateOf(false) }
-    val contextForToast = LocalContext.current.applicationContext
 
     TopAppBar(
-        title = { Text(text = "Movies") },
+        navigationIcon =
+        if (navController.previousBackStackEntry != null) {
+            {
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        } else {
+            null
+        },
+        title = { Text(text = title) },
         backgroundColor =  MaterialTheme.colors.primarySurface,
         actions = {
             TopAppBarActionButton(
@@ -37,8 +49,7 @@ fun AppBar() {
                 offset = DpOffset(x = 10.dp, y = (-60).dp)
             ) {
                 DropdownMenuItem(onClick = {
-                    Toast.makeText(contextForToast, "Favorites Click", Toast.LENGTH_SHORT)
-                        .show()
+                    navController.navigate("favorites")
                     dropDownMenuExpanded = false
                 }) {
                     Icon(

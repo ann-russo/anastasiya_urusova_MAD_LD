@@ -3,27 +3,21 @@ package com.example.mad_ld
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.ui.Modifier
-import com.example.mad_ld.screens.HomeScreen
+import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import com.example.mad_ld.models.FavoritesModel
+import com.example.mad_ld.navigation.Navigation
 import com.example.mad_ld.ui.theme.MAD_LDTheme
 
 class MainActivity : ComponentActivity() {
+    private val favoritesModel: FavoritesModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MAD_LDTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Column {
-                        HomeScreen()
-                    }
-                }
+                val favMovies by favoritesModel.favMovies.observeAsState(emptyList())
+                Navigation(favMovies, favoritesModel)
             }
         }
     }

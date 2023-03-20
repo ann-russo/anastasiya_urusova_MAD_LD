@@ -1,11 +1,13 @@
 package com.example.mad_ld.widgets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -18,15 +20,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.example.mad_ld.models.FavoritesModel
 import com.example.mad_ld.models.Movie
 
 @Composable
-fun MovieCard(movie: Movie) {
+fun MovieCard(movie: Movie, favoritesModel: FavoritesModel, onItemClick: (String) -> Unit = {}) {
     var expandedState by remember { mutableStateOf(false) }
 
     Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(5.dp),
+        .padding(5.dp)
+        .clickable { onItemClick(movie.id) },
         shape = RoundedCornerShape(corner = CornerSize(15.dp)),
         elevation = 5.dp
     ) {
@@ -41,17 +45,7 @@ fun MovieCard(movie: Movie) {
                     contentDescription = "Movie Poster",
                     contentScale = ContentScale.Crop
                 )
-
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp),
-                    contentAlignment = Alignment.TopEnd
-                ){
-                    Icon(
-                        tint = MaterialTheme.colors.secondary,
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Add to favorites")
-                }
+                FavoriteIcon(movie = movie, favoritesModel = favoritesModel)
             }
 
             Row(modifier = Modifier
@@ -81,14 +75,42 @@ fun MovieCard(movie: Movie) {
                 }
             }
             if (expandedState) {
-                AddMovieDetails(movie = movie)
+                MovieDetails(movie = movie)
             }
         }
     }
 }
 
 @Composable
-fun AddMovieDetails(movie: Movie) {
+fun FavoriteIcon(movie: Movie, favoritesModel: FavoritesModel) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(10.dp),
+        contentAlignment = Alignment.TopEnd
+    ){
+        IconButton(onClick = {
+            if (favoritesModel.isFavorite(movie)) {
+                favoritesModel.removeFromFavorites(movie)
+            } else {
+                favoritesModel.addToFavorites(movie)
+            }
+        }) {
+            Icon(
+                tint = MaterialTheme.colors.secondary,
+                imageVector =
+                if (favoritesModel.isFavorite(movie)) {
+                    Icons.Default.Favorite
+                } else {
+                    Icons.Default.FavoriteBorder
+                },
+                contentDescription = "Add to favorites"
+            )
+        }
+    }
+}
+
+@Composable
+fun MovieDetails(movie: Movie) {
     Text(
         text =
         "Director: " + movie.director +
