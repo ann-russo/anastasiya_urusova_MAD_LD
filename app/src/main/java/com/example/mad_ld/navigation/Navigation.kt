@@ -6,14 +6,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mad_ld.models.FavoritesModel
-import com.example.mad_ld.models.Movie
+import com.example.mad_ld.screens.AddMovieScreen
 import com.example.mad_ld.screens.DetailScreen
 import com.example.mad_ld.screens.FavoriteScreen
 import com.example.mad_ld.screens.HomeScreen
+import com.example.mad_ld.viewmodels.MoviesViewModel
 
 @Composable
-fun Navigation(favMovies: List<Movie>, favoritesModel: FavoritesModel) {
+fun Navigation(moviesViewModel: MoviesViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -21,7 +21,7 @@ fun Navigation(favMovies: List<Movie>, favoritesModel: FavoritesModel) {
         startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(navController, favMovies, favoritesModel)
+            HomeScreen(navController, moviesViewModel)
         }
 
         composable(
@@ -31,11 +31,15 @@ fun Navigation(favMovies: List<Movie>, favoritesModel: FavoritesModel) {
                     type = NavType.StringType
                 })
         ) {backStackEntry ->
-            DetailScreen(navController, favoritesModel, movieId = backStackEntry.arguments?.getString("movieId"))
+            DetailScreen(navController, moviesViewModel, movieId = backStackEntry.arguments?.getString("movieId"))
         }
 
         composable(Screen.Favorites.route) {
-            FavoriteScreen(navController, favMovies, favoritesModel)
+            FavoriteScreen(navController, moviesViewModel)
+        }
+
+        composable(Screen.Add.route) {
+            AddMovieScreen(navController = navController, moviesViewModel = moviesViewModel)
         }
     }
 }
@@ -44,4 +48,5 @@ sealed class Screen(val route: String) {
     object Home: Screen("homescreen")
     object Details: Screen("detail/{movieId}")
     object Favorites: Screen("favorites")
+    object Add: Screen("add")
 }

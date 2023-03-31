@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.MoreVert
@@ -58,6 +59,18 @@ fun AppBar(navController: NavController = rememberNavController(), title: String
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Favorites")
                 }
+
+                DropdownMenuItem(onClick = {
+                    navController.navigate("add")
+                    dropDownMenuExpanded = false
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Movie")
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Add New Movie")
+                }
+
             }
         }
     )

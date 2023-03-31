@@ -20,11 +20,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.mad_ld.models.FavoritesModel
 import com.example.mad_ld.models.Movie
 
 @Composable
-fun MovieCard(movie: Movie, favoritesModel: FavoritesModel, onItemClick: (String) -> Unit = {}) {
+fun MovieCard(
+    movie: Movie,
+    favorite: Boolean,
+    onFavoriteChange: (Boolean) -> Unit,
+    onItemClick: (String) -> Unit = {}
+) {
     var expandedState by remember { mutableStateOf(false) }
 
     Card(modifier = Modifier
@@ -45,7 +49,28 @@ fun MovieCard(movie: Movie, favoritesModel: FavoritesModel, onItemClick: (String
                     contentDescription = "Movie Poster",
                     contentScale = ContentScale.Crop
                 )
-                FavoriteIcon(movie = movie, favoritesModel = favoritesModel)
+
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    IconButton(
+                        onClick = {
+                            onFavoriteChange(favorite.not()) }
+                    ) {
+                        Icon(
+                            tint = MaterialTheme.colors.secondary,
+                            imageVector =
+                            if (favorite) {
+                                Icons.Default.Favorite
+                            } else {
+                                Icons.Default.FavoriteBorder
+                            },
+                            contentDescription = "Add to favorites"
+                        )
+                    }
+                }
             }
 
             Row(modifier = Modifier
@@ -77,34 +102,6 @@ fun MovieCard(movie: Movie, favoritesModel: FavoritesModel, onItemClick: (String
             if (expandedState) {
                 MovieDetails(movie = movie)
             }
-        }
-    }
-}
-
-@Composable
-fun FavoriteIcon(movie: Movie, favoritesModel: FavoritesModel) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(10.dp),
-        contentAlignment = Alignment.TopEnd
-    ){
-        IconButton(onClick = {
-            if (favoritesModel.isFavorite(movie)) {
-                favoritesModel.removeFromFavorites(movie)
-            } else {
-                favoritesModel.addToFavorites(movie)
-            }
-        }) {
-            Icon(
-                tint = MaterialTheme.colors.secondary,
-                imageVector =
-                if (favoritesModel.isFavorite(movie)) {
-                    Icons.Default.Favorite
-                } else {
-                    Icons.Default.FavoriteBorder
-                },
-                contentDescription = "Add to favorites"
-            )
         }
     }
 }
