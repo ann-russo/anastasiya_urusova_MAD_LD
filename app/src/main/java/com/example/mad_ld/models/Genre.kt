@@ -1,20 +1,20 @@
 package com.example.mad_ld.models
 
 enum class Genre {
-    ACTION,
-    ADVENTURE,
-    BIOGRAPHY,
-    CRIME,
-    COMEDY,
-    DOCUMENTARY,
-    DRAMA,
-    FANTASY,
-    HISTORY,
-    HORROR,
-    MYSTERY,
-    ROMANCE,
-    SCIFI,
-    THRILLER
+    Action,
+    Adventure,
+    Biography,
+    Crime,
+    Comedy,
+    Documentary,
+    Drama,
+    Fantasy,
+    History,
+    Horror,
+    Mystery,
+    Romance,
+    Scifi,
+    Thriller
 }
 
 data class ListItemSelectable(

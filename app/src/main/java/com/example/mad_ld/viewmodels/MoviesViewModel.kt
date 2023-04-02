@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.example.mad_ld.models.ListItemSelectable
 import com.example.mad_ld.models.Movie
 import com.example.mad_ld.models.getMovies
+import java.time.LocalDate
+import java.time.Year
 
 class MoviesViewModel: ViewModel() {
     private val _movieList = getMovies().toMutableStateList()
@@ -25,8 +27,42 @@ class MoviesViewModel: ViewModel() {
         return movieList.find { it.id == movieId }
     }
 
-    fun validateString(input: String): Boolean {
-        return input.isEmpty()
+    fun isStringValid(input: String): Boolean {
+        return input.isNotEmpty()
+    }
+
+    fun isYearValid(input: String): Boolean {
+        if (!isStringValid(input)) {
+            return false
+        }
+        return try {
+            val yearNum = input.toInt()
+            yearNum > 1900 && yearNum <= Year.now().value
+        } catch (ne: NumberFormatException) {
+            false
+        }
+    }
+
+    fun isRatingValid(input: String): Boolean {
+        if (!isStringValid(input)) {
+            return false
+        }
+        return try {
+            val ratingNum = input.toFloat()
+            ratingNum > 0 && ratingNum <= 10
+        } catch (ne: NumberFormatException) {
+            false
+        }
+    }
+
+    fun isGenreValid(genres: List<ListItemSelectable>): Boolean {
+        var atLeastOneSelected = false
+        for (genre in genres) {
+            if (genre.isSelected) {
+                atLeastOneSelected = true
+            }
+        }
+        return atLeastOneSelected
     }
 
     fun createNewMovie(
@@ -68,7 +104,7 @@ class MoviesViewModel: ViewModel() {
         return "tt$randomNum"
     }
 
-    private fun retrieveRandomNum(except: List<Int>): Int{
+    private fun retrieveRandomNum(except: List<Int>): Int {
         return ((1000000..9999999).filter { !except.contains(it) }).random()
     }
 }

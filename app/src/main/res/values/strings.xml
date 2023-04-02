@@ -2,10 +2,17 @@
     <string name="app_name">MAD_LD</string>
     <string name="enter_movie_title">Enter title</string>
     <string name="enter_movie_year">Enter year</string>
-    <string name="select_genres">Select genres</string>
+    <string name="select_genres">Select Genres</string>
     <string name="enter_director">Enter director</string>
     <string name="enter_actors">Enter actors</string>
     <string name="enter_plot">Enter plot</string>
     <string name="enter_rating">Enter a rating</string>
     <string name="add">Add movie</string>
+    <string name="error_movie_title">Title is required</string>
+    <string name="error_movie_year">Year is required</string>
+    <string name="error_genres">Select at least one genre</string>
+    <string name="error_director">Director is required</string>
+    <string name="error_actors">Enter at least one actor</string>
+    <string name="error_plot">Plot is required</string>
+    <string name="error_rating">Rating must be a number between 0 and 10</string>
 </resources>

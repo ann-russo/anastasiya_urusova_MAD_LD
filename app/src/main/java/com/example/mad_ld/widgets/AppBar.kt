@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mad_ld.navigation.Screen
 
 @Composable
 fun AppBar(navController: NavController = rememberNavController(), title: String) {
@@ -50,7 +51,7 @@ fun AppBar(navController: NavController = rememberNavController(), title: String
                 offset = DpOffset(x = 10.dp, y = (-60).dp)
             ) {
                 DropdownMenuItem(onClick = {
-                    navController.navigate("favorites")
+                    navController.navigate(Screen.Favorites.route)
                     dropDownMenuExpanded = false
                 }) {
                     Icon(
@@ -61,7 +62,7 @@ fun AppBar(navController: NavController = rememberNavController(), title: String
                 }
 
                 DropdownMenuItem(onClick = {
-                    navController.navigate("add")
+                    navController.navigate(Screen.Add.route)
                     dropDownMenuExpanded = false
                 }) {
                     Icon(
