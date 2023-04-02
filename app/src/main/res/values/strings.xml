@@ -9,10 +9,10 @@
     <string name="enter_rating">Enter a rating</string>
     <string name="add">Add movie</string>
     <string name="error_movie_title">Title is required</string>
-    <string name="error_movie_year">Year is required</string>
+    <string name="error_movie_year">Enter a valid year between 1900 and now</string>
     <string name="error_genres">Select at least one genre</string>
     <string name="error_director">Director is required</string>
     <string name="error_actors">Enter at least one actor</string>
     <string name="error_plot">Plot is required</string>
-    <string name="error_rating">Rating must be a number between 0 and 10</string>
+    <string name="error_rating">Enter a valid rating between 0 and 10</string>
 </resources>

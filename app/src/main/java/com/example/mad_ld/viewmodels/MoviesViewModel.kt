@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.example.mad_ld.models.ListItemSelectable
 import com.example.mad_ld.models.Movie
 import com.example.mad_ld.models.getMovies
-import java.time.LocalDate
 import java.time.Year
 
 class MoviesViewModel: ViewModel() {
@@ -37,7 +36,7 @@ class MoviesViewModel: ViewModel() {
         }
         return try {
             val yearNum = input.toInt()
-            yearNum > 1900 && yearNum <= Year.now().value
+            yearNum >= 1900 && yearNum <= Year.now().value
         } catch (ne: NumberFormatException) {
             false
         }
