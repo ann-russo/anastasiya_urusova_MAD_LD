@@ -2,33 +2,62 @@ package com.example.mad_ld.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.mad_ld.viewmodels.MoviesViewModel
+import com.example.mad_ld.utils.InjectorUtils
+import com.example.mad_ld.viewmodel.HomeViewModel
 import com.example.mad_ld.widgets.AppBar
 import com.example.mad_ld.widgets.MovieList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(navController: NavController = rememberNavController(), moviesViewModel: MoviesViewModel = viewModel()) {
+fun HomeScreen(navController: NavController = rememberNavController()) {
+    val viewModel: HomeViewModel = viewModel(
+        factory = InjectorUtils.provideHomeViewModelFactory(
+            LocalContext.current
+        )
+    )
+    val moviesState = viewModel.movieList.collectAsState()
+    val scaffoldState: ScaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colors.background
     ) {
-        Column {
-            AppBar(navController, "Movies")
-            MovieList(
-                navController,
-                list = moviesViewModel.movieList,
-                onFavoriteMovie = { movie, favorite ->
-                    moviesViewModel.changeFavState(movie, favorite)
+        Scaffold(
+            scaffoldState = scaffoldState,
+            topBar = { AppBar(navController, "Movies") },
+            content = { padding ->
+                Column(modifier = Modifier.padding(padding)) {
+                    MovieList(
+                        navController,
+                        list = moviesState.value,
+                        onFavoriteMovie = { movie ->
+                            coroutineScope.launch {
+                                viewModel.changeFavState(movie)
+                            }
+                        },
+                        onDelete = { movie ->
+                            coroutineScope.launch {
+                                viewModel.deleteMovie(movie)
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = "${movie.title} successfully deleted"
+                                )
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
+        )
     }
 }

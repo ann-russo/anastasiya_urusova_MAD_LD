@@ -1,4 +1,4 @@
-package com.example.mad_ld.viewmodels
+package com.example.mad_ld.viewmodel
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column

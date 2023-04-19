@@ -14,17 +14,22 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mad_ld.R
+import com.example.mad_ld.db.MovieDatabase
+import com.example.mad_ld.db.repository.MovieRepository
 import com.example.mad_ld.models.Genre
 import com.example.mad_ld.models.ListItemSelectable
 import com.example.mad_ld.navigation.Screen
-import com.example.mad_ld.viewmodels.MoviesViewModel
-import com.example.mad_ld.viewmodels.OutlineTextFieldWithErrorView
+import com.example.mad_ld.viewmodel.AddMovieViewModel
+import com.example.mad_ld.viewmodel.OutlineTextFieldWithErrorView
+import com.example.mad_ld.viewmodelfactory.AddMovieViewModelFactory
 import com.example.mad_ld.widgets.AppBar
 import kotlinx.coroutines.launch
 import java.util.*
@@ -33,9 +38,14 @@ import java.util.*
 @Composable
 fun AddMovieScreen(
     modifier: Modifier = Modifier,
-    navController: NavController,
-    moviesViewModel: MoviesViewModel
+    navController: NavController
 ) {
+    val db = MovieDatabase.getDatabase(LocalContext.current)
+    val repository = MovieRepository(movieDao = db.movieDao())
+    val factory = AddMovieViewModelFactory(repository = repository)
+    val viewModel: AddMovieViewModel = viewModel(factory = factory)
+    val coroutineScope = rememberCoroutineScope()
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -77,7 +87,7 @@ fun AddMovieScreen(
                 value = title,
                 onValueChange = { input: String ->
                     title = input
-                    titleError = !moviesViewModel.isStringValid(input)
+                    titleError = !viewModel.isStringValid(input)
                 },
                 label = { Text(text = stringResource(R.string.enter_movie_title)) },
                 singleLine = true,
@@ -100,7 +110,7 @@ fun AddMovieScreen(
                 value = year,
                 onValueChange = { input: String ->
                     year = input
-                    yearError = !moviesViewModel.isYearValid(input)
+                    yearError = !viewModel.isYearValid(input)
                 },
                 label = { Text(stringResource(R.string.enter_movie_year)) },
                 singleLine = true,
@@ -158,7 +168,7 @@ fun AddMovieScreen(
                 }
             }
 
-            if (!moviesViewModel.isGenreValid(genres)) {
+            if (!viewModel.isGenreValid(genres)) {
                 genresError = true
                 Text(
                     text = stringResource(R.string.error_genres),
@@ -175,7 +185,7 @@ fun AddMovieScreen(
                 value = director,
                 onValueChange = { input: String ->
                     director = input
-                    directorError = !moviesViewModel.isStringValid(input)
+                    directorError = !viewModel.isStringValid(input)
                 },
                 label = { Text(stringResource(R.string.enter_director)) },
                 singleLine = true,
@@ -198,7 +208,7 @@ fun AddMovieScreen(
                 value = actors,
                 onValueChange = { input: String ->
                     actors = input
-                    actorsError = !moviesViewModel.isStringValid(input)
+                    actorsError = !viewModel.isStringValid(input)
                 },
                 label = { Text(stringResource(R.string.enter_actors)) },
                 singleLine = true,
@@ -221,7 +231,7 @@ fun AddMovieScreen(
                 value = plot,
                 onValueChange = { input: String ->
                     plot = input
-                    plotError = !moviesViewModel.isStringValid(input)
+                    plotError = !viewModel.isStringValid(input)
                 },
                 label = {
                     Text(
@@ -250,7 +260,7 @@ fun AddMovieScreen(
                 value = rating,
                 onValueChange = { input: String ->
                     rating = input
-                    ratingError = !moviesViewModel.isRatingValid(input)
+                    ratingError = !viewModel.isRatingValid(input)
                 },
                 label = { Text(stringResource(R.string.enter_rating)) },
                 singleLine = true,
@@ -276,7 +286,7 @@ fun AddMovieScreen(
                     .padding(10.dp)
                     .fillMaxWidth(),
                 enabled = validateInputs(
-                    moviesViewModel = moviesViewModel,
+                    viewModel = viewModel,
                     title = title,
                     year = year,
                     genres = genres,
@@ -286,15 +296,17 @@ fun AddMovieScreen(
                     rating = rating
                 ),
                 onClick = {
-                    moviesViewModel.createNewMovie(
-                        title,
-                        year,
-                        genres.filter { genre: ListItemSelectable -> genre.isSelected },
-                        director,
-                        actors,
-                        plot,
-                        rating
-                    )
+                    coroutineScope.launch {
+                        viewModel.createNewMovie(
+                            title,
+                            year,
+                            genres.filter { genre: ListItemSelectable -> genre.isSelected },
+                            director,
+                            actors,
+                            plot,
+                            rating
+                        )
+                    }
                     scope.launch {
                         snackBarHostState.showSnackbar("Added movie to catalogue!")
                     }
@@ -319,7 +331,7 @@ fun getMappedGenres(): List<ListItemSelectable> {
 }
 
 fun validateInputs(
-    moviesViewModel: MoviesViewModel,
+    viewModel: AddMovieViewModel,
     title: String,
     year: String,
     genres: List<ListItemSelectable>,
@@ -328,11 +340,11 @@ fun validateInputs(
     plot: String,
     rating: String
 ): Boolean {
-    return moviesViewModel.isStringValid(title) &&
-            moviesViewModel.isYearValid(year) &&
-            moviesViewModel.isGenreValid(genres) &&
-            moviesViewModel.isStringValid(director) &&
-            moviesViewModel.isStringValid(actors) &&
-            moviesViewModel.isStringValid(plot) &&
-            moviesViewModel.isRatingValid(rating)
+    return viewModel.isStringValid(title) &&
+            viewModel.isYearValid(year) &&
+            viewModel.isGenreValid(genres) &&
+            viewModel.isStringValid(director) &&
+            viewModel.isStringValid(actors) &&
+            viewModel.isStringValid(plot) &&
+            viewModel.isRatingValid(rating)
 }

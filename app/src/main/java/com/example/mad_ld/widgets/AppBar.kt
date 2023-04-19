@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -50,6 +51,18 @@ fun AppBar(navController: NavController = rememberNavController(), title: String
                 },
                 offset = DpOffset(x = 10.dp, y = (-60).dp)
             ) {
+
+                DropdownMenuItem(onClick = {
+                    navController.navigate(Screen.Home.route)
+                    dropDownMenuExpanded = false
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "All Movies")
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("All Movies")
+                }
+
                 DropdownMenuItem(onClick = {
                     navController.navigate(Screen.Favorites.route)
                     dropDownMenuExpanded = false
@@ -69,9 +82,8 @@ fun AppBar(navController: NavController = rememberNavController(), title: String
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add Movie")
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Add New Movie")
+                    Text("Add Movie")
                 }
-
             }
         }
     )

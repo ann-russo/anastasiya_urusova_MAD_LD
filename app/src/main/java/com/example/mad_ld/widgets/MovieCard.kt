@@ -1,5 +1,6 @@
 package com.example.mad_ld.widgets
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,10 +8,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,16 +18,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.mad_ld.models.Movie
+import com.example.mad_ld.db.entity.Movie
 
 @Composable
 fun MovieCard(
     movie: Movie,
     favorite: Boolean,
-    onFavoriteChange: (Boolean) -> Unit,
-    onItemClick: (String) -> Unit = {}
+    onFavoriteChange: () -> Unit,
+    onDelete: () -> Unit,
+    onItemClick: (Int) -> Unit = {}
 ) {
     var expandedState by remember { mutableStateOf(false) }
+    val isFavorite = remember { mutableStateOf(favorite) }
+    Log.d("isFavorite", "${movie.title} ${isFavorite.value}")
 
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -53,16 +54,18 @@ fun MovieCard(
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .padding(10.dp),
-                    contentAlignment = Alignment.TopEnd
+                    contentAlignment = Alignment.TopStart,
                 ) {
                     IconButton(
                         onClick = {
-                            onFavoriteChange(favorite.not()) }
+                            isFavorite.value = !isFavorite.value
+                            onFavoriteChange()
+                        }
                     ) {
                         Icon(
                             tint = MaterialTheme.colors.secondary,
                             imageVector =
-                            if (favorite) {
+                            if (movie.isFavorite) {
                                 Icons.Default.Favorite
                             } else {
                                 Icons.Default.FavoriteBorder
@@ -71,6 +74,21 @@ fun MovieCard(
                         )
                     }
                 }
+
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            tint = MaterialTheme.colors.secondary,
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete movie"
+                        )
+                    }
+                }
+
             }
 
             Row(modifier = Modifier

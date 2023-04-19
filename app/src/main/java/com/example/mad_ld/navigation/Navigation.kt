@@ -10,10 +10,9 @@ import com.example.mad_ld.screens.AddMovieScreen
 import com.example.mad_ld.screens.DetailScreen
 import com.example.mad_ld.screens.FavoriteScreen
 import com.example.mad_ld.screens.HomeScreen
-import com.example.mad_ld.viewmodels.MoviesViewModel
 
 @Composable
-fun Navigation(moviesViewModel: MoviesViewModel) {
+fun Navigation() {
     val navController = rememberNavController()
 
     NavHost(
@@ -21,32 +20,37 @@ fun Navigation(moviesViewModel: MoviesViewModel) {
         startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
-            HomeScreen(navController, moviesViewModel)
+            HomeScreen(navController)
         }
 
         composable(
             route = Screen.Details.route,
             arguments = listOf(
                 navArgument("movieId") {
-                    type = NavType.StringType
+                    type = NavType.IntType
                 })
-        ) {backStackEntry ->
-            DetailScreen(navController, moviesViewModel, movieId = backStackEntry.arguments?.getString("movieId"))
+        ) { backStackEntry ->
+            backStackEntry.arguments?.let {
+                DetailScreen(
+                    navController,
+                    movieId = it.getInt("movieId")
+                )
+            }
         }
 
         composable(Screen.Favorites.route) {
-            FavoriteScreen(navController, moviesViewModel)
+            FavoriteScreen(navController)
         }
 
         composable(Screen.Add.route) {
-            AddMovieScreen(navController = navController, moviesViewModel = moviesViewModel)
+            AddMovieScreen(navController = navController)
         }
     }
 }
 
 sealed class Screen(val route: String) {
-    object Home: Screen("homescreen")
-    object Details: Screen("detail/{movieId}")
-    object Favorites: Screen("favorites")
-    object Add: Screen("add")
+    object Home : Screen("homescreen")
+    object Details : Screen("detail/{movieId}")
+    object Favorites : Screen("favorites")
+    object Add : Screen("add")
 }
